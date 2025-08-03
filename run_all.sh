@@ -6,9 +6,7 @@ export CUBLAS_WORKSPACE_CONFIG=:4096:8
 
 KERNELS=(
   rbf 
-)  # laplacian linear polynomial
-  # brownian brownian_bridge sobolev fbm
-  # matern wendland bspline fejer spectral_mix
+)
 
 try_batch_sizes=(256 128 64 32)
 
@@ -34,7 +32,6 @@ run_deepspeed_with_batch_retry() {
 
   local sizes=()
   if [ -n "$start_bs" ]; then
-    # start_bs부터 시작, try_batch_sizes에서 start_bs보다 작은 값 순서대로 뒤에 붙임
     sizes+=("$start_bs")
     for bs in "${try_batch_sizes[@]}"; do
       if (( bs < start_bs )); then
@@ -109,31 +106,21 @@ run_experiment() {
   local group_size=$3
   local stride=$4
 
-  local key_usemse="${run_name_base}_usemse"
-
-  if [ -n "${batch_size_cache[$key_usemse]}" ]; then
-    local cached_bs=${batch_size_cache[$key_usemse]}
-    echo "정보 있음: ${key_usemse} 이미 성공한 배치 사이즈 ${cached_bs} 있음. 그 배치부터 시도"
-    if ! run_deepspeed_with_batch_retry "$key_usemse" "$cached_bs"; then
-      echo "WARNING: ${key_usemse} 재시도 실패, 다음 실험으로"
-      return
-    fi
-  else
-    if ! run_deepspeed_with_batch_retry "$key_usemse"; then
-      echo "WARNING: ${key_usemse} 실패, 다음 실험으로"
-      return
-    fi
-  fi
-
-  # use_mse = false 실행 (성공한 배치 사이즈로 고정)
+  # 실험에 필요한 공통 파라미터 세팅
   yq eval -i ".MODEL.LOSS_NAMES = [\"MSE_MMD_Loss\"]" $BASE_CFG
-  yq eval -i ".MODEL.LOSS_USE_MSE = false" $BASE_CFG
+  yq eval -i ".MODEL.LOSS_USE_MSE = true" $BASE_CFG   # 항상 MSE만 사용
   yq eval -i ".MMD.KERNEL = \"$kernel\"" $BASE_CFG
   yq eval -i ".MMD.GROUP_SIZE = $group_size" $BASE_CFG
   yq eval -i ".MMD.STRIDE = $stride" $BASE_CFG
 
-  echo "====== [USE_MSE=FALSE] 시작: ${run_name_base} (K=$kernel, G=$group_size, S=$stride) ======"
-  run_deepspeed_fixed_batch "${run_name_base}_nomse" "${batch_size_cache[$key_usemse]}"
+  # 배치사이즈 찾기/적용 및 실험
+  if [ -n "${batch_size_cache[$run_name_base]}" ]; then
+    local cached_bs=${batch_size_cache[$run_name_base]}
+    echo "정보 있음: ${run_name_base} 이미 성공한 배치 사이즈 ${cached_bs} 있음. 그 배치부터 시도"
+    run_deepspeed_with_batch_retry "$run_name_base" "$cached_bs"
+  else
+    run_deepspeed_with_batch_retry "$run_name_base"
+  fi
 }
 
 # (1) group_size == stride

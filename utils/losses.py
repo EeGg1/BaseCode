@@ -326,7 +326,7 @@ class MSE_MMD_Loss(nn.Module):
     # ------------------------------------------------------------
 
     def _lambda_schedule(self, epoch: int) -> float:
-        if epoch < 10 or 200 <= epoch <= 230:  # warm-up 기간
+        if epoch < 70 or 140< epoch < 170 :  # warm-up 기간
             return 0.0
         else:
             return 5.0
@@ -355,9 +355,7 @@ class MSE_MMD_Loss(nn.Module):
         """
         epoch = int(getattr(trainer, "epoch", getattr(trainer, "cur_epoch", 0)))
         loss_mse = self.mse_loss(pred, target)
-        lam = 5.0
-        if self.use_mse: 
-            lam = self._lambda_schedule(epoch)
+        lam = self._lambda_schedule(epoch)
         if lam == 0.0:
             return loss_mse
 
@@ -376,9 +374,7 @@ class MSE_MMD_Loss(nn.Module):
         loss_mmd = torch.stack(mmd_vals).mean()     # channel + cfg 평균
         loss_mmd = torch.clamp(loss_mmd, min=0.0)
         loss_mmd = torch.sqrt(loss_mmd + 1e-6)
-        if self.use_mse: 
-            return loss_mse + lam * loss_mmd
-        return  lam * loss_mmd            
+        return lam * loss_mmd         
 
 class mape_loss(nn.Module): # Mean Absolute Percentage Error (MAPE) loss
     def __init__(self):

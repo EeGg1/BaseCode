@@ -57,14 +57,14 @@ TEST:
   CHECKPOINT_DIR: ./checkpoints/ # directory to load trained checkpoints
   VIS_ERROR: False # Error 보여줄건지 
   VIS_DATA: True # TOP, WORST data 보여줄건지 
-  VIS_DATA_NUM: 1 # TOP, WORST 몇개 보여줄건지
+  VIS_DATA_NUM: 10 # TOP, WORST 몇개 보여줄건지
   PREDICTION_ERROR_DIR: "" # 불러와서 쓰고 싶으면, 평상시에는 ""로 놓고
   PREDICTION_ERROR_TYPE: MAE # MAE, MSE
   APPLY_MOVING_AVERAGE: False # True로 하면 moving average 적용, 시간에 따른 변화를 보기 위함 smoothing (TTA 관련 체크를 위해)
   # MOVING_AVERAGE_WINDOW: 100 
 MODEL_NAME: transformer_mlp
 MODEL:
-  LOSS_USE_MSE: false #MUST ERASE!! JIWON
+  LOSS_USE_MSE: true #MUST ERASE!! JIWON
   task_name: long_term_forecast
   seq_len: *seq_len_anchor
   label_len: *label_len_anchor
@@ -144,7 +144,7 @@ SOLVER:
 WANDB:
   ENABLE: True # wandb on/off # sweep 키면 자동으로 True 됨 #! 체크
   PROJECT: BaseCode
-  NAME: transformer_mlp_weather_200_epochs_MMD_rbf_gs16_st16_usemse_bs256
+  NAME: transformer_mlp_weather_200_epochs_MMD_rbf_gs16_st16_bs256
   JOB_TYPE: train # train or eval
   NOTES: '' # a description of this run
   DIR: ./
