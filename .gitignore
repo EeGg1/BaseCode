@@ -1,0 +1,16 @@
+__pycache__/
+checkpoints/
+data_provider/
+exp/
+figures/
+logs/
+results/
+scripts/
+test_results/
+vis/
+*.txt
+run.py
+.vscode/
+data/
+data_raw/
+wandb/
