@@ -19,7 +19,7 @@ from utils.meters import AverageMeter, ProgressMeter
 
 from utils.losses import Losses
 
-losses = Losses()
+#Jiwon: changed losses to local variable. 
 
 class Trainer:
     def __init__(
@@ -32,7 +32,7 @@ class Trainer:
     ):
         self.cfg = cfg
         self.dtype = return_type(cfg, 'torch')
-        
+        self.losses = Losses(cfg)
         self.model = model
         self.optimizer = optimizer
         
@@ -196,8 +196,8 @@ class Trainer:
         
         pred = pred[:, -self.cfg.DATA.PRED_LEN:, self.cfg.DATA.TARGET_START_IDX:]
         
-        loss = losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
-        metric = losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
+        loss = self.losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
+        metric = self.losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
         #make_dot(loss).render("loss_graph", format="png")
         #! 엥 이거 이렇게 된거면 config 넣어주는거랑 상관없이 이렇게 되지 않나?            
         #loss = F.mse_loss(pred, ground_truth) 
@@ -211,8 +211,8 @@ class Trainer:
                 pred = self.model(enc_window, enc_window_stamp, dec_window, dec_window_stamp)[0]
             else:
                 pred = self.model(enc_window, enc_window_stamp, dec_window, dec_window_stamp)
-            loss = losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
-            metric = losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
+            loss = self.losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
+            metric = self.losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
         
             #loss = F.mse_loss(pred, ground_truth) 
             #metric = F.l1_loss(pred, ground_truth)
@@ -331,8 +331,8 @@ class Trainer:
         
         pred = pred[:, -self.cfg.DATA.PRED_LEN:, self.cfg.DATA.TARGET_START_IDX:]
         
-        loss = losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
-        metric = losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
+        loss = self.losses.losses[self.cfg.MODEL.LOSS_NAMES[0]](self, pred, ground_truth)
+        metric = self.losses.metrics[self.cfg.MODEL.METRIC_NAMES[0]](self, pred, ground_truth)
         
         #loss = F.mse_loss(pred, ground_truth)
         #metric = F.l1_loss(pred, ground_truth)

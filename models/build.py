@@ -37,7 +37,7 @@ def build_model(cfg):
         if torch.cuda.is_available() and not use_deepspeed:
             print('noo')
             model = model.cuda()
-        if cfg.NUM_GPUS > 1  and use_deepspeed:
+        if cfg.NUM_GPUS > 1  and not use_deepspeed:
             model = DDP(model, device_ids=cfg.VISIBLE_DEVICES.split(','),)
 
         return model

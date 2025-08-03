@@ -20,10 +20,11 @@ def init_wandb(cfg: CN):
     )
     formatted_time = datetime.now(timezone('Asia/Seoul')).strftime("%y%m%d-%H%M%S")
     # save checkpoints and results in the wandb log directory
-    cfg.TRAIN.CHECKPOINT_DIR = str(mkdir(os.path.join(cfg.TRAIN.CHECKPOINT_DIR, 'wandb', formatted_time+'_'+wandb.run.id)))
-    cfg.RESULT_DIR = str(mkdir(os.path.join(cfg.RESULT_DIR, 'wandb', formatted_time+'_'+wandb.run.id)))
-    
-    
+    #cfg.TRAIN.CHECKPOINT_DIR = str(mkdir(os.path.join(cfg.TRAIN.CHECKPOINT_DIR, 'wandb', formatted_time+'_'+wandb.run.id)))
+    #cfg.RESULT_DIR = str(mkdir(os.path.join(cfg.RESULT_DIR, 'wandb', formatted_time+'_'+wandb.run.id)))
+    cfg.TRAIN.CHECKPOINT_DIR = str(mkdir(os.path.join(cfg.TRAIN.CHECKPOINT_DIR, 'wandb', formatted_time + '_' + cfg.WANDB.NAME + '_' + wandb.run.id)))
+    cfg.RESULT_DIR = str(mkdir(os.path.join(cfg.RESULT_DIR, 'wandb', formatted_time + '_' + cfg.WANDB.NAME + '_' + wandb.run.id)))
+
 def update_wandb(cfg: CN, global_sweep_id: str) -> CN: # sweep 켜진 경우 
     wandb.init(resume="allow", dir=f"./wandb/sweep-{global_sweep_id}")
     

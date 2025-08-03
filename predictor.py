@@ -16,12 +16,12 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from utils.losses import Losses
 
-losses=Losses()
 class Predictor:
     def __init__(self, cfg, model):
         self.cfg = cfg
         self.dtype = return_type(cfg, 'torch')
 
+        losses=Losses(cfg)
         assert hasattr(model, "forecast")
         self.model = model
 

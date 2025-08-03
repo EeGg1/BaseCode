@@ -72,7 +72,7 @@ def main():
     set_seeds(cfg.SEED)
     update_cfg_from_dataset(cfg, cfg.DATA.NAME)
     
-    if (not dist.is_initialized()) and cfg.TRAIN.USE_DEEPSPEED:
+    if (not dist.is_initialized()):
         print('wtf1')
         dist.init_process_group(backend='nccl')
     
